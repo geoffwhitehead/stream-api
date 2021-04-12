@@ -1,18 +1,19 @@
 import express from "express";
 import { requestAssetStream } from "./services/asset";
-
-const SLOWDOWN = 1111;
+import { ReadStream } from "fs";
+import { config } from "./config";
 
 export const routes = (app: express.Application) => {
-  app.get("/resource/:resourceId", (req, res) => {
-    console.log(`req.headers`, req.headers);
-
-    let stream: ReturnType<typeof requestAssetStream>;
+  app.get("/resource/:resourceId", async (req, res) => {
+    let stream: ReadStream;
     try {
-      stream = requestAssetStream(req.params.resourceId);
+      stream = await requestAssetStream(
+        req.params.resourceId,
+        req.headers["x-user-id"] as string
+      );
     } catch (e) {
-      res.writeHead(404, "Not found");
-      res.end();
+      res.writeHead(400, e.message);
+      return res.end();
     }
 
     stream.on("error", (e: any) => {
@@ -30,10 +31,9 @@ export const routes = (app: express.Application) => {
     });
 
     stream.on("end", () => {
-      console.log("end");
       setTimeout(() => {
         res.end();
-      }, SLOWDOWN);
+      }, config.debug.slowdown);
     });
   });
 };
