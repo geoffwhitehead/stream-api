@@ -1,7 +1,7 @@
 import express from "express";
 import { requestAssetStream } from "./services/asset";
 
-const PORT = 3000;
+const PORT = process.env.port || 3000;
 
 const app = express();
 const SLOWDOWN = 1111;
