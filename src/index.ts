@@ -1,24 +1,21 @@
 import express from "express";
-import fs from "fs";
+import { requestAssetStream } from "./services/asset";
 
 const PORT = 3000;
 
 const app = express();
 const SLOWDOWN = 1111;
 
-app.get("/", (req, res) => res.sendFile(__dirname + "./src/index.html"));
-
 app.get("/resource/:resourceId", (req, res) => {
-  const resourceMap: Record<string, string> = {
-    a: "mtb.mp4",
-  };
-
   console.log(`req.headers`, req.headers);
 
-  const filePath =
-    __dirname + "/../assets/" + resourceMap[req.params.resourceId];
-
-  const stream = fs.createReadStream(filePath);
+  let stream: ReturnType<typeof requestAssetStream>;
+  try {
+    stream = requestAssetStream(req.params.resourceId);
+  } catch (e) {
+    res.writeHead(404, "Not found");
+    res.end();
+  }
 
   stream.on("error", (e: any) => {
     if (e.code === "ENOENT") {
