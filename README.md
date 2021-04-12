@@ -22,7 +22,7 @@ prevent a user watching more than 3 video streams concurrently.
 A user can only request 3 streams at the same time.
 A user id stored in the request header is used to uniquely identify a user `x-user-id` and simulate mocking of a token.
 Redis is used as a simple data store. A count is stored against a user id which represents the number of active streams for this user.
-As streams start and end this count is increases and decreased. A check is performed to ensure that a stream is not opened if the count would exceed the `MAX_STREAMS` defined in the environment variables.
+As streams start and end this count is increased and decreased. A check is performed to ensure that a stream is not opened if the count would exceed `MAX_STREAMS` defined in the environment variables.
 
 ## Testing
 
