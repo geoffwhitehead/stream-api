@@ -1,0 +1,20 @@
+redis:
+  image: redis
+  container_name: cache
+  expose:
+    - 6379
+
+app:
+  build: ./
+  links:
+    - redis
+  volumes:
+    - ./:/app
+  ports:
+    - 3000:3000
+  environment:
+    - NODE_ENV=development
+    - PORT=3000
+    - MAX_STREAMS=3
+    - REDIS_URL=redis://cache
+  command: sh -c 'yarn && yarn start'
